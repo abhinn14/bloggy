@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import type { IUser } from "../models/user.js";
+import  User, { type IUser } from "../models/user_model.js";
 
 export interface AuthReq extends Request{
     user?: IUser | null;
@@ -23,13 +23,18 @@ export const isAuth = async (req:AuthReq,res:Response,next:NextFunction):Promise
         if(!JWT_KEY) {
           throw new Error("JWT_KEY not defined");
         }
-        const decodeValue = jwt.verify(token,JWT_KEY) as JwtPayload;
-        if(!decodeValue || !decodeValue.user) {
+        const decoded = jwt.verify(token, JWT_KEY) as JwtPayload;
+        if(!decoded || !decoded.userId) {
             res.status(401).json({message:"Invalid token"});
             return;
         }
 
-        req.user = decodeValue.user;
+        const user = await User.findById(decoded.userId);
+        if(!user) {
+            res.status(401).json({message: "User not found"});
+            return;
+        }
+        req.user = user; 
         next();
     } catch(error) {
         console.log("JWT verify error => ",error);
@@ -37,3 +42,4 @@ export const isAuth = async (req:AuthReq,res:Response,next:NextFunction):Promise
     }
 }
 
+    
