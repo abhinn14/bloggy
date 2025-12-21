@@ -6,9 +6,28 @@ import blogRoutes from "./routes/blog_route.js";
 const app = express();
 dotenv.config();
 
+import {v2 as cloudinary} from "cloudinary";
+
+const {
+    CLOUDINARY_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
+} = process.env;
+
+if(!CLOUDINARY_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+    throw new Error("Missing Cloudinary environment variables");
+}
+
+cloudinary.config({
+    cloud_name: CLOUDINARY_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
+});
+
+
 const PORT = process.env.PORT;
 
-const sql = neon(process.env.DB_URL as string);
+export const sql = neon(process.env.DB_URL as string);
 
 async function initDB() {
     try {

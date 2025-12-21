@@ -23,7 +23,7 @@ export const login = async (req:Request, res:Response) => {
 
 export const myProfile = async (req:AuthReq, res:Response) => {
     try {
-        if(!req.user) return res.status(401).json({ message: "Not authenticated" });
+        if(!req.user) return res.status(401).json({message: "Not authenticated"});
         const user = await User.findById(req.user._id);
         if(!user) {
             res.status(401).json({message: "User not found"});
