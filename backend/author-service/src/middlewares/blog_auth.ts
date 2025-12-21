@@ -9,7 +9,7 @@ export const isAuth = async (req:AuthReq,res:Response,next:NextFunction):Promise
     try {
         const authHeader = req.headers.authorization;
         if(!authHeader || !authHeader.startsWith("Bearer ")) {
-            res.status(401).json({message:"No auth header."});
+            res.status(401).json({message: "No auth header."});
             return;
         }
         
@@ -24,15 +24,16 @@ export const isAuth = async (req:AuthReq,res:Response,next:NextFunction):Promise
         }
         const decoded = jwt.verify(token, JWT_KEY) as JwtPayload;
         if(!decoded || !decoded.userId) {
-            res.status(401).json({message:"Invalid token"});
+            res.status(401).json({message: "Invalid token"});
             return;
         }
-        
-        req.user = {_id: decoded.userId}; 
+
+        req.user = {_id: decoded.userId};
+
         next();
     } catch(error) {
-        console.log("JWT verify error => ",error);
-        res.status(401).json({message:"JWT verify error"});
+        console.log("JWT verify error => ", error);
+        res.status(401).json({message: "JWT verify error"});
     }
 }
 

@@ -6,7 +6,7 @@ import getBuffer from "../utils/dataURI.js"
 // type tells TS -> “This import is only for type checking, don’t emit it in JS”
 import { v2 as cloudinary } from "cloudinary";
 
-export const login = async (req:Request,res:Response) => {
+export const login = async (req:Request, res:Response) => {
     try {
         const {email, name, image} = req.body;
         let user = await User.findOne({email});
@@ -23,7 +23,12 @@ export const login = async (req:Request,res:Response) => {
 
 export const myProfile = async (req:AuthReq, res:Response) => {
     try {
-        const user = req.user;
+        if(!req.user) return res.status(401).json({ message: "Not authenticated" });
+        const user = await User.findById(req.user._id);
+        if(!user) {
+            res.status(401).json({message: "User not found"});
+            return;
+        }
         res.json(user);
     } catch(error:any) {
         res.status(500).json({message:error.message});
@@ -46,9 +51,10 @@ export const getUserProfile = async (req:Request, res:Response) => {
 
 export const updateUser = async (req: AuthReq, res:Response) => {
     try {
+        if(!req.user) return res.status(401).json({ message: "Not authenticated" });
         const {name, linkedin, bio} = req.body;
         const user = await User.findByIdAndUpdate(
-            req.user!._id, // if this is null -> runtime crash
+            req.user._id,
             {name, linkedin, bio},
             {new: true}
         );
@@ -64,6 +70,7 @@ export const updateUser = async (req: AuthReq, res:Response) => {
 
 export const updateProfilePic = async (req: AuthReq, res: Response) => {
     try {
+        if(!req.user) return res.status(401).json({ message: "Not authenticated" });
         const file = req.file;
 
         if(!file) {
@@ -80,7 +87,7 @@ export const updateProfilePic = async (req: AuthReq, res: Response) => {
 
         const cloud = await cloudinary.uploader.upload(fileBuffer.content, {folder: "blogs"});
         const user = await User.findByIdAndUpdate(
-          req.user!._id,
+          req.user._id,
           {image: cloud.secure_url},
           {new: true}
         );
