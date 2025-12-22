@@ -1,6 +1,6 @@
 import express from "express";
-import {createBlog, deleteBlog, updateBlog} from "../controllers/blog_controller.js";
-import {isAuth} from "../middlewares/blog_auth.js";
+import {createBlog, deleteBlog, updateBlog} from "../controllers/author_controller.js";
+import {isAuth} from "../middlewares/author_auth.js";
 import uploadFile from "../middlewares/multer.js";
 
 const router = express.Router();

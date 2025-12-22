@@ -1,12 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import {neon} from "@neondatabase/serverless";
-import blogRoutes from "./routes/blog_route.js";
+import authorRoutes from "./routes/author_route.js";
+import cors from "cors";
 
-const app = express();
 dotenv.config();
+const app = express();
+app.use(express.json());
+app.use(cors());
 
 import {v2 as cloudinary} from "cloudinary";
+import { connectRabbitMQ } from "./utils/rabbitMQ.js";
 
 const {
     CLOUDINARY_NAME,
@@ -24,8 +28,9 @@ cloudinary.config({
     api_secret: CLOUDINARY_API_SECRET,
 });
 
-
 const PORT = process.env.PORT;
+
+connectRabbitMQ();
 
 export const sql = neon(process.env.DB_URL as string);
 
@@ -67,10 +72,11 @@ async function initDB() {
     }
 }
 
-app.use("/api/blog", blogRoutes);
+app.use("/api/blog", authorRoutes);
 
 initDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
     });
 });
+

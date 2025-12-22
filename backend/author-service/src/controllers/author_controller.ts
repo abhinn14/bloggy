@@ -1,8 +1,9 @@
 import cloudinary from "cloudinary";
 import type {Response} from "express";
-import type {AuthReq} from "../middlewares/blog_auth.js";
+import type {AuthReq} from "../middlewares/author_auth.js";
 import {sql} from "../server.js";
 import getBuffer from "../utils/dataURI.js";
+import { invalidateChacheJob } from "../utils/rabbitMQ.js";
 
 export const createBlog = async (req: AuthReq, res: Response) => {
     try {
@@ -27,6 +28,8 @@ export const createBlog = async (req: AuthReq, res: Response) => {
           INSERT INTO blogs (title, description, image, blogcontent,category, author)
           VALUES (${title}, ${description},${cloud.secure_url},${blogcontent},${category},
           ${req.user?._id}) RETURNING *`;
+
+        await invalidateChacheJob(["blogs:*"]);
         
         res.json({message: "Blog Created", blog: result[0]});
     } catch(error:any) {
@@ -74,6 +77,7 @@ export const updateBlog = async (req: AuthReq, res: Response) => {
             RETURNING *
             `;
 
+        await invalidateChacheJob(["blogs:*", `blog:${id}`]);
 
         res.json({message: "Blog Updated", blog: updatedBlog[0]});
     } catch(error:any) {
@@ -97,7 +101,8 @@ export const deleteBlog = async (req: AuthReq, res: Response) => {
         await sql`DELETE FROM comments WHERE blogid = ${req.params.id}`;
         await sql`DELETE FROM blogs WHERE id = ${req.params.id}`;
     
-    
+        await invalidateChacheJob(["blogs:*", `blog:${req.params.id}`]);
+        
         res.json({message: "Blog Deleted"});
     } catch(error:any) {
         res.status(500).json({message:error.message});

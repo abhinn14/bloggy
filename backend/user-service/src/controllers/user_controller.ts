@@ -40,8 +40,8 @@ export const getUserProfile = async (req:Request, res:Response) => {
     try {
         const user = await User.findById(req.params.id);
         if(!user) {
-          res.status(404).json({message: "No user with this id"});
-          return;
+            res.status(404).json({message: "No user with this id"});
+            return;
         }
         res.json(user);
     } catch(error:any) {
