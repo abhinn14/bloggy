@@ -1,18 +1,31 @@
 import type {Request, Response} from "express";
 import User from "../models/user_model.js";
 import jwt from "jsonwebtoken";
-import type { AuthReq } from "../middleware/user_auth.js";
-import getBuffer from "../utils/dataURI.js"
-// type tells TS -> “This import is only for type checking, don’t emit it in JS”
-import { v2 as cloudinary } from "cloudinary";
+import type {AuthReq} from "../middleware/user_auth.js";
+import getBuffer from "../utils/dataURI.js";
+import {v2 as cloudinary} from "cloudinary";
+import { oauth2client } from "../utils/googleConfig.js";
+import axios from "axios";
 
 export const login = async (req:Request, res:Response) => {
     try {
-        const {email, name, image} = req.body;
-        let user = await User.findOne({email});
-        if(!user) user = await User.create({name, email, image});
-        const token = jwt.sign({userId: user._id}, process.env.JWT_KEY as string, {expiresIn:"5d"});
+        const {code} = req.body;
 
+        if(!code) {
+            res.status(400).json({message: "Authorization code is required!!"});
+            return;
+        }
+
+        const googleRes = await oauth2client.getToken(code);
+        oauth2client.setCredentials(googleRes.tokens);
+        const userRes = await axios.get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+        );
+
+        const {email, name, picture} = userRes.data;
+        let user = await User.findOne({email});
+        if(!user) user = await User.create({name, email, image: picture});
+        const token = jwt.sign({userId: user._id}, process.env.JWT_KEY as string, {expiresIn:"5d"});
 
         res.status(200).json({message: "Login Successful!", token, user});
     } catch (error:any) {
