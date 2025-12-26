@@ -4,6 +4,8 @@ import type {AuthReq} from "../middlewares/author_auth.js";
 import {sql} from "../server.js";
 import getBuffer from "../utils/dataURI.js";
 import { invalidateChacheJob } from "../utils/rabbitMQ.js";
+import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const createBlog = async (req: AuthReq, res: Response) => {
     try {
@@ -104,6 +106,45 @@ export const deleteBlog = async (req: AuthReq, res: Response) => {
         await invalidateChacheJob(["blogs:*", `blog:${req.params.id}`]);
         
         res.json({message: "Blog Deleted"});
+    } catch(error:any) {
+        res.status(500).json({message:error.message});
+    }
+};
+
+export const aiBlogResponse = async (req: AuthReq, res: Response) => {
+    try {
+        const prompt = ` You will act as a grammar correction engine. I will provide you with blog content 
+        in rich HTML format (from Jodit Editor). Do not generate or rewrite the content with new ideas. Only correct 
+        grammatical, punctuation, and spelling errors while preserving all HTML tags and formatting. Maintain inline styles, 
+        image tags, line breaks, and structural tags exactly as they are. Return the full corrected HTML string as output. `;
+
+        const {blog} = req.body;
+        if(!blog) return res.status(404).json({message: "Please provide blog"});
+        
+        const fullMessage = `${prompt}\n\n${blog}`;
+    
+        const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+        const model = ai.getGenerativeModel({model: "gemini-2.5-flash"});
+        const result = await model.generateContent({
+          contents: [
+            {
+              role: "user",
+              parts: [{text: fullMessage}],
+            },
+          ],
+        });
+    
+        const responseText = result.response.text();
+    
+        const cleanedHtml = responseText
+          .replace(/^(html|```html|```)\n?/i, "")
+          .replace(/```$/i, "")
+          .replace(/\*\*/g, "")
+          .replace(/[\r\n]+/g, "")
+          .replace(/[*_`~]/g, "")
+          .trim();
+    
+        res.status(200).json({ html: cleanedHtml });
     } catch(error:any) {
         res.status(500).json({message:error.message});
     }

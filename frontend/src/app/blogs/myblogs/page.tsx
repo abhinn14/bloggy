@@ -7,12 +7,12 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { useAppData } from "@/context/AppContext";
 
 const HomeContent = () => {
-  const { blogLoading, blogs } = useAppData();
-
+  const { user, blogLoading, blogs } = useAppData();
+  const userBlogs = blogs?.filter(b => b.author === user?._id);
   return (
     <main>
       <div className="flex items-center px-6 py-6">
-        <h1 className="text-3xl font-bold">Latest Blogs</h1>
+        <h1 className="text-3xl font-bold">My Blogs</h1>
       </div>
 
       <div className="container mx-auto px-4 pb-6">
@@ -23,8 +23,8 @@ const HomeContent = () => {
                              xl:grid-cols-5
                              2xl:grid-cols-6
                             gap-12">
-            {blogs?.length === 0 && <p>No Blogs Yet</p>}
-            {blogs?.map((e, i) => (
+            {userBlogs?.length === 0 && <p>No Blogs Yet</p>}
+            {userBlogs?.map((e, i) => (
               <BlogCard
                 key={i}
                 image={e.image}

@@ -1,79 +1,96 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import axios from "axios";
-// import { useAppData, user_service } from "@/context/AppContext";
+import {useAppData, user_service} from "@/context/AppContext";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import { useGoogleLogin } from "@react-oauth/google";
-import { redirect } from "next/navigation";
-import Loading from "@/components/Loading";
+import {useGoogleLogin} from "@react-oauth/google";
+import {redirect} from "next/navigation";
+import {ButtonLoading} from "@/components/Loading";
 
 const LoginPage = () => {
-  const { isAuth, setIsAuth, loading, setLoading, setUser } = useAppData();
+  const {isAuth, setIsAuth, loading, setLoading, setUser} = useAppData();
 
-  if(isAuth) return redirect("/blogs");
+  if(isAuth) redirect("/");
 
-  const responseGoogle = async (authResult: any) => {
-    setLoading(true);
-    try {
-      const result = await axios.post(`${user_service}/api/v1/login`, {
-        code: authResult["code"],
-      });
+  const DEFAULT_AVATAR = "/avatar.png";
 
-      Cookies.set("token", result.data.token, {
-        expires: 5,
-        secure: true,
-        path: "/",
-      });
-      toast.success(result.data.message);
-      setIsAuth(true);
-      setLoading(false);
-      setUser(result.data.user);
-    } catch (error) {
-      console.log("error", error);
-      toast.error("Problem while login you");
-      setLoading(false);
-    }
-  };
+const responseGoogle = async (authResult: any) => {
+  if (loading) return;
+  setLoading(true);
+
+  try {
+    const result = await axios.post(`${user_service}/api/user/login`, {
+      code: authResult.code,
+    });
+
+    const user = result.data.user;
+
+    const finalUser = {
+      ...user,
+      image: user.image && user.image.trim() !== "" ? user.image : DEFAULT_AVATAR,
+    };
+
+    Cookies.set("token", result.data.token, {
+      expires: 5,
+      secure: true,
+      path: "/",
+    });
+
+    setUser(finalUser);
+    setIsAuth(true);
+    toast.success(result.data.message);
+  } catch {
+    toast.error("Login failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const googleLogin = useGoogleLogin({
     onSuccess: responseGoogle,
-    onError: responseGoogle,
+    onError: () => toast.error("Google authentication failed"),
     flow: "auth-code",
   });
+
   return (
-    <>
-      {loading ? (
-        <Loading />
-      ) : (
-        <div className="w-[350px] m-auto mt-[200px]">
-          <Card className="w-[350px]">
-            <CardHeader>
-              <CardTitle>Login to The Reading Retreat</CardTitle>
-              <CardDescription>Your go to blog app</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={googleLogin}>
-                Login with google{" "}
-                <img
-                  src={"/google.png"}
-                  className="w-6 h-6"
-                  alt="google icon"
-                />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </>
+    <div className="min-h-screen flex items-start mt-10 justify-center px-4">
+      <Card className="w-full max-w-sm shadow-md border">
+        <CardHeader className="text-center space-y-1">
+          <CardTitle className="text-xl font-semibold">
+            LOGIN ◔◡◔
+          </CardTitle>
+          <p className="text-sm text-gray-500">
+            Create blogs or access your saved blogs!
+          </p>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          <Button
+            onClick={googleLogin}
+            disabled={loading}
+            className="cursor-pointer w-full h-11 flex items-center justify-center gap-3
+              bg-orange-500 text-white
+              hover:bg-orange-600 active:scale-[0.98]">
+            {loading ? (
+              <ButtonLoading size={18} />
+            ) : (
+              <>
+                <img src="/google.png" className="w-5 h-5" alt="Google" />
+                Continue with Google
+              </>
+            )}
+          </Button>
+
+          <p className="text-xs text-center text-gray-400">
+            Secure Google sign-in · No spam
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

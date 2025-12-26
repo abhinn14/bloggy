@@ -1,157 +1,184 @@
 "use client";
 
-import {useState} from 'react';
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { CircleUserRoundIcon, LogIn, LogOut, Menu, X } from "lucide-react";
+import { LogIn, LogOut, X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-// import { useAppData } from "@/context/AppContext";
+import { useAppData } from "@/context/AppContext";
+import { useRouter, usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const [menu, setMenu] = useState(false);
+  const [menu, openMenu] = useState(false);
+  const { user, loading, isAuth, logoutUser } = useAppData();
 
-  // const {loading, isAuth} = useAppData();
-  const loading = false;
-  const isAuth = false;
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const closeMenu = () => setMenu(false);
-return (
-  <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-orange-100">
-    <div className="container mx-auto flex items-center justify-between px-4 py-3">
+  const closeMenu = () => openMenu(false);
 
-      {/* Logo */}
-      <Link
-        href="/"
-        onClick={closeMenu}
-        className="text-xl font-extrabold text-orange-600 tracking-tight hover:text-orange-700 transition"
-      >
-        TechBloggy
-      </Link>
+  // ✅ hide on /blogs/new and /blogs/edit/[id]
+  const hidePostButton =
+    pathname === "/blogs/new" ||
+    pathname.startsWith("/blogs/edit/");
 
-      {/* Mobile menu button */}
-      <div className="md:hidden">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMenu(!menu)}
-          className="rounded-full text-orange-600 hover:bg-orange-50"
+  return (
+    <nav className="sticky top-0 z-50 h-20 bg-white/80 backdrop-blur-xl border-b border-orange-100">
+      <div className="container mx-auto relative flex h-full items-center justify-between px-4">
+
+        <div className="hidden md:block w-35" />
+
+        {/* LOGO */}
+        <Link
+          href="/"
+          onClick={closeMenu}
+          className="
+            flex items-center gap-1 font-extrabold tracking-tight
+            text-2xl md:text-3xl
+            md:absolute md:left-1/2 md:-translate-x-1/2"
         >
-          {menu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </Button>
-      </div>
+          <span className="bg-linear-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+            Tech
+          </span>
+          <span className="text-gray-900">Bloggy</span>
+          <span className="hidden sm:inline text-red-600 text-4xl leading-none">
+            .
+          </span>
+        </Link>
 
-      {/* Desktop menu */}
-      <ul className="hidden md:flex items-center gap-3 text-sm font-medium">
+        {/* RIGHT ACTIONS */}
+        <div className="flex items-center h-12 gap-3">
 
-        {!loading && isAuth && (
-          <>
-            <li>
+          {/* NOT AUTHENTICATED */}
+          {!loading && !isAuth && (
+            <>
+              {!hidePostButton && (
+                <Button
+                  onClick={() => router.push("/login")}
+                  className="cursor-pointer flex items-center gap-2 h-10 px-4 rounded-full
+                  bg-orange-500 text-white text-sm font-medium
+                  hover:bg-orange-600 transition"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Post a Blog</span>
+                </Button>
+              )}
+
               <Link
-                href="/profile"
-                className="px-4 py-2 rounded-full text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
+                href="/login"
+                className="flex items-center gap-2 h-12 px-5 rounded-full
+                bg-orange-500 text-sm md:text-base font-medium text-white
+                hover:bg-orange-600 transition shadow-sm"
               >
-                My Profile
+                <LogIn className="w-5 h-5" />
+                Login
               </Link>
-            </li>
+            </>
+          )}
 
-            <li>
-              <Link
-                href="/blogs/saved"
-                className="px-4 py-2 rounded-full text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
-              >
-                Saved Blogs
-              </Link>
-            </li>
+          {/* AUTHENTICATED */}
+          {!loading && isAuth && (
+  <>
+    {/* POST BLOG — completely separate */}
+    {!hidePostButton && (
+      <Button
+        onClick={() => router.push("/blogs/new")}
+        className="cursor-pointer flex items-center gap-2 h-10 px-4 rounded-full
+        bg-orange-500 text-white text-sm font-medium
+        hover:bg-orange-600 transition"
+      >
+        <Plus className="w-4 h-4" />
+        <span className="hidden sm:inline">Post a Blog</span>
+      </Button>
+    )}
 
-            <li>
-              <Button
-                // onClick={handleLogout}
-                variant="ghost"
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600 transition"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
-            </li>
-          </>
+    {/* AVATAR + DROPDOWN — UNCHANGED */}
+    <div className="relative">
+      <Button
+        variant="ghost"
+        onClick={() => openMenu(!menu)}
+        className="cursor-pointer h-12 w-12 rounded-full p-0
+        hover:bg-orange-50 flex items-center justify-center"
+      >
+        {menu ? (
+          <X className="w-7 h-7 text-orange-600" />
+        ) : user?.image ? (
+          <img
+            src={user.image}
+            alt={user.name || "Profile"}
+            className="w-10 h-10 rounded-full object-cover border border-orange-200"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-orange-500
+          flex items-center justify-center text-white font-semibold">
+            {user?.name?.[0] || "U"}
+          </div>
         )}
+      </Button>
 
-        {!loading && !isAuth && (
+      {/* DROPDOWN — EXACT SAME AS WORKING VERSION */}
+      <div
+        className={cn(
+          "absolute right-0 mt-3 w-52 origin-top-right rounded-xl border border-orange-100 bg-white shadow-lg transition-all duration-200",
+          menu
+            ? "opacity-100 scale-100 translate-y-0"
+            : "pointer-events-none opacity-0 scale-95 -translate-y-1"
+        )}
+      >
+        <ul className="py-2 text-sm font-medium text-gray-700">
           <li>
             <Link
-              href="/login"
-              className="flex items-center gap-2 px-5 py-2 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition shadow-sm"
-            >
-              <LogIn className="w-4 h-4" />
-              Login
-            </Link>
-          </li>
-        )}
-      </ul>
-    </div>
-
-    {/* Mobile dropdown */}
-    <div
-      className={cn(
-        "md:hidden transition-all duration-300 ease-in-out",
-        menu ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
-      )}
-    >
-      <ul className="flex flex-col gap-2 px-6 py-6 bg-white border-t border-orange-100 text-sm font-medium">
-
-        {!loading && isAuth && (
-          <>
-            <li>
-              <Link
-                href="/profile"
-                onClick={closeMenu}
-                className="block px-4 py-2 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition"
-              >
-                My Profile
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                href="/blogs/saved"
-                onClick={closeMenu}
-                className="block px-4 py-2 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition"
-              >
-                Saved Blogs
-              </Link>
-            </li>
-
-            <li>
-              <Button
-                // onClick={handleLogout}
-                variant="ghost"
-                className="flex items-center gap-2 w-full justify-start px-4 py-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
-            </li>
-          </>
-        )}
-
-        {!loading && !isAuth && (
-          <li>
-            <Link
-              href="/login"
+              href="/profile"
               onClick={closeMenu}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition shadow-sm"
+              className="block px-4 py-2 hover:bg-orange-50 hover:text-orange-600 transition"
             >
-              <LogIn className="w-4 h-4" />
-              Login
+              My Profile
             </Link>
           </li>
-        )}
-      </ul>
+
+          <li>
+            <Link
+              href="/blogs/myblogs"
+              onClick={closeMenu}
+              className="block px-4 py-2 hover:bg-orange-50 hover:text-orange-600 transition"
+            >
+              My Blogs
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href="/blogs/saved"
+              onClick={closeMenu}
+              className="block px-4 py-2 hover:bg-orange-50 hover:text-orange-600 transition"
+            >
+              Saved Blogs
+            </Link>
+          </li>
+
+          <li className="border-t border-orange-100 mt-1 pt-1">
+            <button
+              onClick={() => {
+                openMenu(false);
+                logoutUser();
+              }}
+              className="cursor-pointer flex w-full items-center gap-2 px-4 py-2
+              text-red-500 hover:bg-red-50 hover:text-red-600 transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
-  </nav>
-);
+  </>
+)}
 
-}
-
+        </div>
+      </div>
+    </nav>
+  );
+};
 
 export default Navbar;

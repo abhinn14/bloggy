@@ -8,6 +8,7 @@ export interface AuthReq extends Request {
 export const isAuth = async (req:AuthReq, res:Response, next:NextFunction):Promise<void> => {
     try {
         const authHeader = req.headers.authorization;
+        console.log("Auth header::::::: ", authHeader);
         if(!authHeader || !authHeader.startsWith("Bearer ")) {
             res.status(401).json({message: "No auth header."});
             return;
@@ -29,7 +30,6 @@ export const isAuth = async (req:AuthReq, res:Response, next:NextFunction):Promi
         }
 
         req.user = {_id: decoded.userId};
-
         next();
     } catch(error) {
         console.log("JWT verify error => ", error);

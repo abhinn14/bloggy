@@ -7,12 +7,14 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { useAppData } from "@/context/AppContext";
 
 const HomeContent = () => {
-  const { blogLoading, blogs } = useAppData();
-
+  const { savedBlogs, blogLoading, blogs } = useAppData();
+  const filteredBlogs = blogs?.filter((blog) =>
+    savedBlogs?.some((saved) => saved.blogid === blog.id.toString())
+  );
   return (
     <main>
       <div className="flex items-center px-6 py-6">
-        <h1 className="text-3xl font-bold">Latest Blogs</h1>
+        <h1 className="text-3xl font-bold">Saved Blogs</h1>
       </div>
 
       <div className="container mx-auto px-4 pb-6">
@@ -23,8 +25,8 @@ const HomeContent = () => {
                              xl:grid-cols-5
                              2xl:grid-cols-6
                             gap-12">
-            {blogs?.length === 0 && <p>No Blogs Yet</p>}
-            {blogs?.map((e, i) => (
+            {filteredBlogs?.length === 0 && <p>No Blogs Yet</p>}
+            {filteredBlogs?.map((e, i) => (
               <BlogCard
                 key={i}
                 image={e.image}
@@ -41,7 +43,7 @@ const HomeContent = () => {
 };
 
 
-const HomePage = () => {
+const SavedBlogs = () => {
   const { loading } = useAppData();
   if (loading) return <PageLoading />;
 
@@ -55,4 +57,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default SavedBlogs;

@@ -7,31 +7,46 @@ import {v2 as cloudinary} from "cloudinary";
 import { oauth2client } from "../utils/googleConfig.js";
 import axios from "axios";
 
-export const login = async (req:Request, res:Response) => {
+export const login = async (req: Request, res: Response) => {
     try {
         const {code} = req.body;
 
-        if(!code) {
-            res.status(400).json({message: "Authorization code is required!!"});
-            return;
-        }
+        if(!code) return res.status(400).json({ message: "Authorization code is required!" });
 
-        const googleRes = await oauth2client.getToken(code);
-        oauth2client.setCredentials(googleRes.tokens);
+        const {tokens} = await oauth2client.getToken(code);
+        oauth2client.setCredentials(tokens);
+
         const userRes = await axios.get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {headers: {Authorization: `Bearer ${tokens.access_token}`}}
         );
 
         const {email, name, picture} = userRes.data;
-        let user = await User.findOne({email});
-        if(!user) user = await User.create({name, email, image: picture});
-        const token = jwt.sign({userId: user._id}, process.env.JWT_KEY as string, {expiresIn:"5d"});
 
-        res.status(200).json({message: "Login Successful!", token, user});
-    } catch (error:any) {
-        res.status(500).json({message: error.message});
+        if(!email) return res.status(400).json({message: "Google account has no email"});
+
+        let user = await User.findOne({email});
+        if(!user) {
+          user = await User.create({
+            name,
+            email,
+            image: picture,
+          });
+        }
+
+        const token = jwt.sign(
+          {userId: user._id},
+          process.env.JWT_KEY as string,
+          {expiresIn: "5d"}
+        );
+
+        res.status(200).json({message: "Login successful", token, user});
+
+    } catch(error:any) {
+        res.status(500).json({message:error.message});
     }
 };
+
 
 
 export const myProfile = async (req:AuthReq, res:Response) => {
