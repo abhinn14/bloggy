@@ -13,9 +13,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { get } from "http";
 
-export const user_service = "http://localhost:5000";
-export const author_service = "http://localhost:5001";
-export const blog_service = "http://localhost:5002";
+export const user_service=process.env.NEXT_PUBLIC_USER_SERVICE as string;
+export const author_service=process.env.NEXT_PUBLIC_AUTHOR_SERVICE as string;
+export const blog_service=process.env.NEXT_PUBLIC_BLOG_SERVICE as string;
 
 export const blogCategories = [
   "Web Development",
