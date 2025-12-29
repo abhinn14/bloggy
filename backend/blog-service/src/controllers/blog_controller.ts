@@ -107,15 +107,12 @@ export const addComment = async (req: AuthReq, res: Response) => {
 export const getAllComments = async (req: Request, res:Response) => {
     try {
         const {id} = req.params;
-
         const comments =await sql`SELECT * FROM comments WHERE blogid = ${id} ORDER BY create_at DESC`;
-
         res.json(comments);
     } catch(error:any) {
         res.status(500).json({message: error.message});
     }
 };
-
 
 export const deleteComment = async (req: AuthReq, res: Response) => {
     try {
@@ -140,19 +137,16 @@ export const deleteComment = async (req: AuthReq, res: Response) => {
     }
 }
 
-
 export const saveBlog = async (req: AuthReq, res: Response) => {
     try {
-        const { blogid } = req.params;
+        const {blogid} = req.params;
         const userid = req.user?._id;
 
         if(!blogid || !userid) {
-            res.status(400).json({
-              message: "Missing blog id or userid",
-            });
+            res.status(400).json({message: "Missing blog id or userid"});
             return;
         }
-    
+
         const existing = await sql`SELECT * FROM savedblogs WHERE userid = ${userid} AND blogid = ${blogid}`;
     
         if(existing.length === 0) {
@@ -171,10 +165,9 @@ export const saveBlog = async (req: AuthReq, res: Response) => {
 
 export const getSavedBlog = async (req: AuthReq, res: Response) => {
     try {
-        const blogs =await sql`SELECT * FROM savedblogs WHERE userid = ${req.user?._id}`;
+        const blogs = await sql`SELECT * FROM savedblogs WHERE userid = ${req.user?._id}`;
         res.json(blogs);
     } catch(error:any) {
         res.status(500).json({message: error.message});
     }
 };
-

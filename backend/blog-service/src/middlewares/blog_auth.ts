@@ -8,15 +8,14 @@ export interface AuthReq extends Request {
 export const isAuth = async (req:AuthReq, res:Response, next:NextFunction):Promise<void> => {
     try {
         const authHeader = req.headers.authorization;
-        console.log("Auth header::::::: ", authHeader);
         if(!authHeader || !authHeader.startsWith("Bearer ")) {
             res.status(401).json({message: "No auth header."});
             return;
         }
-        
+
         const token = authHeader.split(" ")[1];
         if(!token) {
-            res.status(401).json({ message: "Token missing" });
+            res.status(401).json({message: "Token missing"});
             return;
         }
         const JWT_KEY = process.env.JWT_KEY;
@@ -37,4 +36,3 @@ export const isAuth = async (req:AuthReq, res:Response, next:NextFunction):Promi
     }
 }
 
-    

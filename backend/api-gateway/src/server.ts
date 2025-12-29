@@ -29,9 +29,7 @@ app.post("/api/user/login", (req, res) =>
 
 app.get("/api/user/myprofile", (req, res) =>
   axios
-    .get(`${USER_SERVICE}/api/user/myprofile`, {
-      headers: req.headers,
-    })
+    .get(`${USER_SERVICE}/api/user/myprofile`, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
@@ -45,9 +43,7 @@ app.get("/api/user/getuser/:id", (req, res) =>
 
 app.put("/api/user/update", (req, res) =>
   axios
-    .put(`${USER_SERVICE}/api/user/update`, req.body, {
-      headers: req.headers,
-    })
+    .put(`${USER_SERVICE}/api/user/update`, req.body, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
@@ -65,90 +61,62 @@ app.get("/api/blog/all", async (_req, res) => {
 
 
 app.get("/api/blog/:id", (req, res) =>
-  axios
-    .get(`${BLOG_SERVICE}/api/blog/${req.params.id}`)
+  axios.get(`${BLOG_SERVICE}/api/blog/${req.params.id}`)
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 404).json(e.response?.data))
 );
 
-app.post("/api/blog/comment/:id", (req, res) =>
-  axios
-    .post(`${BLOG_SERVICE}/api/blog/comment/${req.params.id}`, req.body, {
-      headers: req.headers,
-    })
+app.post("/api/blog/comment/:id", (req:any, res) =>
+  axios.post(`${BLOG_SERVICE}/api/blog/comment/${req.params.id}`, req.body, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 app.get("/api/blog/comment/:id", (req, res) =>
-  axios
-    .get(`${BLOG_SERVICE}/api/blog/comment/${req.params.id}`)
+  axios.get(`${BLOG_SERVICE}/api/blog/comment/${req.params.id}`)
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 500).json(e.response?.data))
 );
 
 app.delete("/api/blog/comment/:commentid", (req, res) =>
-  axios
-    .delete(
-      `${BLOG_SERVICE}/api/blog/comment/${req.params.commentid}`,
-      { headers: req.headers }
-    )
+  axios.delete(`${BLOG_SERVICE}/api/blog/comment/${req.params.commentid}`, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 app.post("/api/blog/save/:blogid", (req, res) =>
-  axios
-    .post(
-      `${BLOG_SERVICE}/api/blog/save/${req.params.blogid}`,
-      {},
-      { headers: req.headers }
-    )
+  axios.post(`${BLOG_SERVICE}/api/blog/save/${req.params.blogid}`, {}, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 app.get("/api/blog/saved/all", (req, res) =>
-  axios
-    .get(`${BLOG_SERVICE}/api/blog/saved/all`, {
-      headers: req.headers,
-    })
+  axios.get(`${BLOG_SERVICE}/api/blog/saved/all`, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 // AUTHOR SERVICE => /api/blog/*
-
 app.post("/api/blog/create", (req, res) =>
-  axios
-    .post(`${AUTHOR_SERVICE}/api/blog/create`, req.body, {
-      headers: req.headers,
-    })
+  axios.post(`${AUTHOR_SERVICE}/api/blog/create`, req.body, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 app.put("/api/blog/update/:id", (req, res) =>
-  axios
-    .put(`${AUTHOR_SERVICE}/api/blog/update/${req.params.id}`, req.body, {
-      headers: req.headers,
-    })
+  axios.put(`${AUTHOR_SERVICE}/api/blog/update/${req.params.id}`, req.body, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 app.delete("/api/blog/delete/:id", (req, res) =>
-  axios
-    .delete(`${AUTHOR_SERVICE}/api/blog/delete/${req.params.id}`, {
-      headers: req.headers,
-    })
+  axios.delete(`${AUTHOR_SERVICE}/api/blog/delete/${req.params.id}`, {headers: {authorization: req.headers.authorization}})
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 401).json(e.response?.data))
 );
 
 app.post("/api/blog/ai/grammarcheck", (req, res) =>
-  axios
-    .post(`${AUTHOR_SERVICE}/api/blog/ai/grammarcheck`, req.body)
+  axios.post(`${AUTHOR_SERVICE}/api/blog/ai/grammarcheck`, req.body)
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 500).json(e.response?.data))
 );
