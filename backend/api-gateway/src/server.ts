@@ -22,8 +22,7 @@ app.get("/health", (_req, res) => {
 
 // USER SERVICE => /api/user/*
 app.post("/api/user/login", (req, res) =>
-  axios
-    .post(`${USER_SERVICE}/api/user/login`, req.body)
+  axios.post(`${USER_SERVICE}/api/user/login`, req.body)
     .then(r => res.json(r.data))
     .catch(e => res.status(e.response?.status || 500).json(e.response?.data))
 );
@@ -57,24 +56,13 @@ app.put("/api/user/update", (req, res) =>
 // BLOG SERVICE => /api/blog/*
 app.get("/api/blog/all", async (_req, res) => {
   try {
-    const { data: blogs } = await axios.get(
-      `${BLOG_SERVICE}/api/blog/all`
-    );
-
-    const enrichedBlogs = await Promise.all(
-      blogs.map(async (blog: any) => {
-        const { data: author } = await axios.get(
-          `${USER_SERVICE}/api/user/getuser/${blog.author}`
-        );
-        return { ...blog, author };
-      })
-    );
-
-    res.json(enrichedBlogs);
+    const response = await axios.get(`${BLOG_SERVICE}/api/blog/all`);
+    res.json(response.data);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch blogs" });
   }
 });
+
 
 app.get("/api/blog/:id", (req, res) =>
   axios

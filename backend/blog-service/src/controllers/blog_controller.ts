@@ -1,4 +1,3 @@
-// import { AuthenticatedReq } from "";
 import {redisClient} from "../server.js";
 import {sql} from "../server.js";
 import type {Request, Response} from "express";
