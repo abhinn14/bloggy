@@ -44,12 +44,11 @@ const BlogPage = () => {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  /* ---------------- FETCH ---------------- */
 
   const fetchSingleBlog = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("/api/blog/${id}");
+      const { data } = await axios.get(`/api/blog/${id}`);
       setBlog(data.blog);
       setAuthor(data.author);
     } finally {
@@ -60,7 +59,7 @@ const BlogPage = () => {
   const fetchComment = async () => {
     try {
       const { data } = await axios.get(
-        "/api/blog/comment/${id}"
+        `/api/blog/comment/${id}`
       );
       setComments(data);
     } catch (err) {
@@ -77,7 +76,6 @@ const BlogPage = () => {
     setSaved(!!savedBlogs?.some((b) => b.blogid === id));
   }, [savedBlogs, id]);
 
-  /* ---------------- ACTIONS ---------------- */
 
   const addComment = async () => {
     if (!comment.trim()) return;
@@ -87,7 +85,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.post(
-        "/api/blog/comment/${id}",
+        `/api/blog/comment/${id}`,
         { comment },
         {
           headers: {
@@ -139,7 +137,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.delete(
-        "/api/blog/delete/${id}",
+        `/api/blog/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -163,7 +161,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.post(
-        "/api/blog/save/${id}",
+        `/api/blog/save/${id}`,
         {},
         {
           headers: {
@@ -184,7 +182,6 @@ const BlogPage = () => {
 
   if (!blog) return <PageLoading />;
 
-  /* ================= UI ================= */
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 space-y-16 text-zinc-900">
@@ -249,7 +246,7 @@ const BlogPage = () => {
         </CardHeader>
 
         <CardContent className="space-y-16 pb-16">
-          {/* IMAGE (width only) */}
+          {/* IMAGE */}
           <div className="flex justify-center">
             <img
               src={blog.image}

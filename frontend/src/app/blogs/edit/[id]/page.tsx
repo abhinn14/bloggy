@@ -47,12 +47,8 @@ const EditBlogPage = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const { data } = await axios.get(
-          "/api/blog/${id}"
-        );
-
+        const { data } = await axios.get(`/api/blog/${id}`);
         const blog = data.blog;
-
         setFormData({
           title: blog.title,
           description: blog.description,
@@ -100,7 +96,7 @@ const EditBlogPage = () => {
     try {
       const token = Cookies.get("token");
       const { data } = await axios.put(
-        "/api/blog/update/${id}",
+        `/api/blog/update/${id}`,
         fd,
         { headers: { Authorization: `Bearer ${token}` } }
       );
