@@ -3,7 +3,7 @@
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import axios from "axios";
-import {useAppData, api_gateway} from "@/context/AppContext";
+import {useAppData} from "@/context/AppContext";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import {useGoogleLogin} from "@react-oauth/google";
@@ -22,7 +22,7 @@ const responseGoogle = async (authResult: any) => {
   setLoading(true);
 
   try {
-    const result = await axios.post(`${api_gateway}/api/user/login`, {
+    const result = await axios.post("/api/user/login", {
       code: authResult.code,
     });
 

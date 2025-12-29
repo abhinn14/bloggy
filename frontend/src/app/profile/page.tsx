@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAppData, api_gateway } from "@/context/AppContext";
+import { useAppData } from "@/context/AppContext";
 import { useRef, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -53,7 +53,7 @@ const ProfilePage = () => {
       form.append("file", file);
 
       const {data} = await axios.put(
-        `${api_gateway}/api/user/update/pfp`,
+        "/api/user/update/pfp",
         form,
         {headers: {Authorization: `Bearer ${token}`}}
       );
@@ -73,7 +73,7 @@ const ProfilePage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.put(
-        `${api_gateway}/api/user/update`,
+        "/api/user/update",
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

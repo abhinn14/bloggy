@@ -12,7 +12,6 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-export const api_gateway=process.env.NEXT_PUBLIC_API_GATEWAY as string;
 
 export const blogCategories = [
   "Web Development",
@@ -84,7 +83,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     try {
       const token = Cookies.get("token");
 
-      const { data } = await axios.get(`${api_gateway}/api/user/myprofile`,
+      const { data } = await axios.get("/api/user/myprofile",
         {headers: {
           Authorization: `Bearer ${token}`}});
 
@@ -107,7 +106,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setBlogLoading(true);
     try {
       const { data } = await axios.get(
-        `${api_gateway}/api/blog/all?searchQuery=${searchQuery}&category=${category}`
+        "/api/blog/all?searchQuery=${searchQuery}&category=${category}"
       );
 
       setBlogs(data);
@@ -123,7 +122,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   async function getSavedBlogs() {
     const token = Cookies.get("token");
     try {
-      const { data } = await axios.get(`${api_gateway}/api/blog/saved/all`,
+      const { data } = await axios.get("/api/blog/saved/all",
         {headers: {Authorization: `Bearer ${token}`}});
 
       setSavedBlogs(data);

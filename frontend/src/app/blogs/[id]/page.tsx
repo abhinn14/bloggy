@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Blog,
-  api_gateway,
   useAppData,
   User,
 } from "@/context/AppContext";
@@ -50,7 +49,7 @@ const BlogPage = () => {
   const fetchSingleBlog = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${api_gateway}/api/blog/${id}`);
+      const { data } = await axios.get("/api/blog/${id}");
       setBlog(data.blog);
       setAuthor(data.author);
     } finally {
@@ -61,7 +60,7 @@ const BlogPage = () => {
   const fetchComment = async () => {
     try {
       const { data } = await axios.get(
-        `${api_gateway}/api/blog/comment/${id}`
+        "/api/blog/comment/${id}"
       );
       setComments(data);
     } catch (err) {
@@ -88,7 +87,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.post(
-        `${api_gateway}/api/blog/comment/${id}`,
+        "/api/blog/comment/${id}",
         { comment },
         {
           headers: {
@@ -115,7 +114,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.delete(
-        `${api_gateway}/api/blog/comment/${commentId}`,
+        "/api/blog/comment/${commentId}",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,7 +139,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.delete(
-        `${api_gateway}/api/blog/delete/${id}`,
+        "/api/blog/delete/${id}",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -164,7 +163,7 @@ const BlogPage = () => {
       const token = Cookies.get("token");
 
       const { data } = await axios.post(
-        `${api_gateway}/api/blog/save/${id}`,
+        "/api/blog/save/${id}",
         {},
         {
           headers: {
