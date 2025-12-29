@@ -2,8 +2,8 @@
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, user_service } from "@/context/AppContext";
-import React, { useEffect, useState } from "react";
+import { User, api_gateway } from "@/context/AppContext";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Linkedin } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -16,7 +16,7 @@ const UserProfilePage = () => {
   const fetchUser = async () => {
     try {
       const { data } = await axios.get(
-        `${user_service}/api/user/getuser/${id}`
+        `${api_gateway}/api/user/getuser/${id}`
       );
       setUser(data);
     } catch (error) {

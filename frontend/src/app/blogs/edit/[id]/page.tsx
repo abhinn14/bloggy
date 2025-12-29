@@ -17,8 +17,7 @@ import dynamic from "next/dynamic";
 import Cookies from "js-cookie";
 import axios from "axios";
 import {
-  author_service,
-  blog_service,
+  api_gateway,
   blogCategories,
   useAppData,
 } from "@/context/AppContext";
@@ -50,7 +49,7 @@ const EditBlogPage = () => {
     const fetchBlog = async () => {
       try {
         const { data } = await axios.get(
-          `${blog_service}/api/blog/${id}`
+          `${api_gateway}/api/blog/${id}`
         );
 
         const blog = data.blog;
@@ -77,7 +76,7 @@ const EditBlogPage = () => {
     try {
       setAiBlogLoading(true);
       const { data } = await axios.post(
-        `${author_service}/api/blog/ai/grammarcheck`,
+        `${api_gateway}/api/blog/ai/grammarcheck`,
         { blog: formData.blogcontent }
       );
 
@@ -102,7 +101,7 @@ const EditBlogPage = () => {
     try {
       const token = Cookies.get("token");
       const { data } = await axios.put(
-        `${author_service}/api/blog/update/${id}`,
+        `${api_gateway}/api/blog/update/${id}`,
         fd,
         { headers: { Authorization: `Bearer ${token}` } }
       );

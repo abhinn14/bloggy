@@ -11,11 +11,8 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { get } from "http";
 
-export const user_service=process.env.NEXT_PUBLIC_USER_SERVICE as string;
-export const author_service=process.env.NEXT_PUBLIC_AUTHOR_SERVICE as string;
-export const blog_service=process.env.NEXT_PUBLIC_BLOG_SERVICE as string;
+export const api_gateway=process.env.NEXT_PUBLIC_API_GATEWAY as string;
 
 export const blogCategories = [
   "Web Development",
@@ -87,7 +84,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     try {
       const token = Cookies.get("token");
 
-      const { data } = await axios.get(`${user_service}/api/user/myprofile`,
+      const { data } = await axios.get(`${api_gateway}/api/user/myprofile`,
         {headers: {
           Authorization: `Bearer ${token}`}});
 
@@ -110,7 +107,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setBlogLoading(true);
     try {
       const { data } = await axios.get(
-        `${blog_service}/api/blog/all?searchQuery=${searchQuery}&category=${category}`
+        `${api_gateway}/api/blog/all?searchQuery=${searchQuery}&category=${category}`
       );
 
       setBlogs(data);
@@ -126,7 +123,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   async function getSavedBlogs() {
     const token = Cookies.get("token");
     try {
-      const { data } = await axios.get(`${blog_service}/api/blog/saved/all`,
+      const { data } = await axios.get(`${api_gateway}/api/blog/saved/all`,
         {headers: {Authorization: `Bearer ${token}`}});
 
       setSavedBlogs(data);
