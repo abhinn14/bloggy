@@ -300,7 +300,7 @@ const BlogPage = () => {
             >
               <User2 size={18} />
               <div className="flex-1">
-                <Link href={`/profile/${c.id}`}>
+                <Link href={`/profile/${c.userid}`}>
                   <p className="font-semibold text-orange-500 hover:underline cursor-pointer">
                     {c.username}
                   </p>
