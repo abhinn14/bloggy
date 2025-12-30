@@ -27,7 +27,8 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
 
 async function proxy(req: NextRequest, context: RouteContext) {
   const { path } = await context.params;
-  const url = `${BACKEND_BASE_URL}/${path.join("/")}`;
+  const queryString = req.nextUrl.search;
+  const url = `${BACKEND_BASE_URL}/${path.join("/")}${queryString}`;
 
   const contentType = req.headers.get("content-type") || "";
 

@@ -138,6 +138,17 @@ app.get("/api/blog/:id", async (req, res) => {
   }
 });
 
+app.get("/api/blog/comment/:id", async (req, res) => {
+  try {
+    const r = await axios.get(
+      `${BLOG_SERVICE}/api/blog/comment/${req.params.id}`
+    );
+    res.status(r.status).json(r.data);
+  } catch (e: any) {
+    res.status(e.response?.status || 500).json(e.response?.data);
+  }
+});
+
 app.post("/api/blog/comment/:id", async (req, res) => {
   try {
     const r = await axios.post(
@@ -162,6 +173,33 @@ app.delete("/api/blog/comment/:commentid", async (req, res) => {
     res.status(e.response?.status || 401).json(e.response?.data);
   }
 });
+
+app.post("/api/blog/save/:blogid", async (req, res) => {
+  try {
+    const r = await axios.post(
+      `${BLOG_SERVICE}/api/blog/save/${req.params.blogid}`,
+      {},
+      { headers: { authorization: req.headers.authorization } }
+    );
+    res.status(r.status).json(r.data);
+  } catch (e: any) {
+    res.status(e.response?.status || 401).json(e.response?.data);
+  }
+});
+
+app.get("/api/blog/saved/all", async (req, res) => {
+  try {
+    const r = await axios.get(
+      `${BLOG_SERVICE}/api/blog/saved/all`,
+      { headers: { authorization: req.headers.authorization } }
+    );
+    res.status(r.status).json(r.data);
+  } catch (e: any) {
+    res.status(e.response?.status || 401).json(e.response?.data);
+  }
+});
+
+
 
 // AUTHOR SERVICE
 app.post("/api/blog/create", (req, res) =>
