@@ -59,7 +59,13 @@ export const getSingleBlog = async (req: Request, res: Response) => {
         const blogid = req.params.id;
 
         const cacheKey = `blog:${blogid}`;
-        const cached = await redisClient.get(cacheKey);
+
+        let cached = null;
+        try {
+          cached = await redisClient.get(cacheKey);
+        } catch (err) {
+          console.warn("Redis get failed, continuing without cache");
+        }
 
         if(cached) {
             console.log("Serving single blog from Redis cache!!");
@@ -74,7 +80,11 @@ export const getSingleBlog = async (req: Request, res: Response) => {
 
         const responseData = {blog: blog[0], author: data};
     
-        await redisClient.set(cacheKey, JSON.stringify(responseData), {EX: 3600});
+        try {
+          await redisClient.set(cacheKey, JSON.stringify(responseData), { EX: 3600 });
+        } catch (err) {
+          console.warn("Redis set failed");
+        }
     
         res.json(responseData);
     } catch(error:any) {
