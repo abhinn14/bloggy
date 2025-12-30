@@ -50,14 +50,25 @@ app.put("/api/user/update", (req, res) =>
 
 
 // BLOG SERVICE => /api/blog/*
-app.get("/api/blog/all", async (_req, res) => {
+app.get("/api/blog/all", async (req, res) => {
   try {
-    const response = await axios.get(`${BLOG_SERVICE}/api/blog/all`);
+    const response = await axios.get(
+      `${BLOG_SERVICE}/api/blog/all`,
+      {
+        params: {
+          searchQuery: req.query.searchQuery,
+          category: req.query.category,
+        },
+      }
+    );
+
     res.json(response.data);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Failed to fetch blogs" });
   }
 });
+
 
 
 app.get("/api/blog/:id", (req, res) =>

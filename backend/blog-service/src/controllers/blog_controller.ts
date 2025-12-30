@@ -6,15 +6,18 @@ import type { AuthReq } from "../middlewares/blog_auth.js";
 
 export const getAllBlogs = async (req:Request, res:Response) => {
     try {
-        const searchQuery =
-            typeof req.query.searchQuery === "string" ? req.query.searchQuery : "";
+        const searchQuery = typeof req.query.searchQuery === "string" ? req.query.searchQuery : "";
 
-        const category =
-            typeof req.query.category === "string" ? req.query.category : "";
+        const category = typeof req.query.category === "string" ? req.query.category : "";
 
         const cacheKey = `blogs:${searchQuery.toLowerCase()}:${category.toLowerCase()}`;
 
-        const cached = await redisClient.get(cacheKey);
+        let cached = null;
+        try {
+          cached = await redisClient.get(cacheKey);
+        } catch (err) {
+          console.warn("Redis get failed, continuing without cache");
+        }
 
         if(cached) {
             console.log("Fetched from Redis!!");
@@ -39,7 +42,11 @@ export const getAllBlogs = async (req:Request, res:Response) => {
 
         console.log("Fetched from DB!!");
 
-        await redisClient.set(cacheKey, JSON.stringify(blogs), { EX: 3600 });
+        try {
+          await redisClient.set(cacheKey, JSON.stringify(blogs), { EX: 3600 });
+        } catch (err) {
+          console.warn("Redis set failed");
+        }
 
         res.json(blogs);
     } catch(error:any) {

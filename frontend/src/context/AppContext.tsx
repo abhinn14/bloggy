@@ -105,9 +105,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   async function fetchBlogs() {
     setBlogLoading(true);
     try {
-      const { data } = await axios.get(
-        "/api/blog/all?searchQuery=${searchQuery}&category=${category}"
-      );
+      const { data } = await axios.get("/api/blog/all", {
+        params: {
+          searchQuery,
+          category,
+        },
+      });
 
       setBlogs(data);
     } catch (error) {
