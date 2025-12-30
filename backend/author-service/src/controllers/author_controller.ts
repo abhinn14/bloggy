@@ -3,8 +3,8 @@ import type {Response} from "express";
 import type {AuthReq} from "../middlewares/author_auth.js";
 import {sql} from "../server.js";
 import getBuffer from "../utils/dataURI.js";
-import { invalidateChacheJob } from "../utils/rabbitMQ.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {invalidateChacheJob} from "../utils/rabbitMQ.js";
+import {GoogleGenerativeAI} from "@google/generative-ai";
 
 export const createBlog = async (req: AuthReq, res: Response) => {
     try {
