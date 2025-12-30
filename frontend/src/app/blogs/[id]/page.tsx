@@ -211,7 +211,7 @@ const BlogPage = () => {
 
             <div className="flex gap-1">
               {isAuth && (
-                <Button
+                <Button className="cursor-pointer"
                   size="icon"
                   variant="ghost"
                   onClick={saveBlog}
@@ -222,7 +222,7 @@ const BlogPage = () => {
               )}
 
               {blog.author === user?._id && (
-                <Button
+                <Button className="cursor-pointer"
                   size="icon"
                   variant="ghost"
                   onClick={() => router.push(`/blogs/edit/${id}`)}
@@ -232,7 +232,7 @@ const BlogPage = () => {
               )}
 
               {blog.author === user?._id && (
-                <Button
+                <Button className="cursor-pointer"
                   size="icon"
                   variant="ghost"
                   onClick={deleteBlog}
@@ -286,7 +286,7 @@ const BlogPage = () => {
               <Button
                 onClick={addComment}
                 disabled={loading || !comment.trim()}
-                className="cursor-pointer"
+                className="cursor-pointer text-orange-500"
               >
                 {loading ? "Sending..." : "Send"}
               </Button>
@@ -300,9 +300,11 @@ const BlogPage = () => {
             >
               <User2 size={18} />
               <div className="flex-1">
-                <p className="font-semibold text-orange-500">
-                  {c.username}
-                </p>
+                <Link href={`/profile/${c.id}`}>
+                  <p className="font-semibold text-orange-500 hover:underline cursor-pointer">
+                    {c.username}
+                  </p>
+                </Link>
                 <p className="text-zinc-800">{c.comment}</p>
                 <p className="text-xs text-zinc-500">
                   {new Date(c.create_at).toLocaleString()}
