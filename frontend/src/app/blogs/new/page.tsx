@@ -77,7 +77,7 @@ const AddBlog = () => {
       const { data } = await axios.post(
         "/api/blog/create",
         fd,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data"} }
       );
 
       toast.success(data.message);
