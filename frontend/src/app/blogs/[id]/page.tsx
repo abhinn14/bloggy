@@ -1,26 +1,15 @@
 "use client";
 
-import { PageLoading } from "@/components/Loading";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Blog,
-  useAppData,
-  User,
-} from "@/context/AppContext";
+import {PageLoading} from "@/components/Loading";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Blog, useAppData, User} from "@/context/AppContext";
 import axios from "axios";
-import {
-  Bookmark,
-  BookmarkCheck,
-  Edit,
-  Trash2,
-  Trash2Icon,
-  User2,
-} from "lucide-react";
+import {Bookmark, BookmarkCheck, Edit, Trash2, Trash2Icon, User2} from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import {useParams, useRouter} from "next/navigation";
+import {useEffect, useState}  from "react";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 
@@ -33,9 +22,9 @@ interface Comment {
 }
 
 const BlogPage = () => {
-  const { isAuth, user, fetchBlogs, savedBlogs, getSavedBlogs } = useAppData();
+  const {isAuth, user, fetchBlogs, savedBlogs, getSavedBlogs} = useAppData();
   const router = useRouter();
-  const { id } = useParams();
+  const {id} = useParams();
 
   const [blog, setBlog] = useState<Blog | null>(null);
   const [author, setAuthor] = useState<User | null>(null);
@@ -48,7 +37,7 @@ const BlogPage = () => {
   const fetchSingleBlog = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/blog/${id}`);
+      const {data} = await axios.get(`/api/blog/${id}`);
       setBlog(data.blog);
       setAuthor(data.author);
     } finally {
@@ -58,9 +47,7 @@ const BlogPage = () => {
 
   const fetchComment = async () => {
     try {
-      const { data } = await axios.get(
-        `/api/blog/comment/${id}`
-      );
+      const {data} = await axios.get(`/api/blog/comment/${id}`);
       setComments(data);
     } catch (err) {
       console.log(err);
@@ -78,20 +65,16 @@ const BlogPage = () => {
 
 
   const addComment = async () => {
-    if (!comment.trim()) return;
+    if(!comment.trim()) return;
 
     try {
       setLoading(true);
       const token = Cookies.get("token");
 
-      const { data } = await axios.post(
+      const {data} = await axios.post(
         `/api/blog/comment/${id}`,
-        { comment },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        {comment},
+        {headers: {Authorization: `Bearer ${token}`}}
       );
 
       toast.success(data.message);
@@ -105,19 +88,15 @@ const BlogPage = () => {
   };
 
   const deleteComment = async (commentId: string) => {
-    if (!confirm("Delete this comment?")) return;
+    if(!confirm("Delete this comment?")) return;
 
     try {
       setLoading(true);
       const token = Cookies.get("token");
 
-      const { data } = await axios.delete(
-        "/api/blog/comment/${commentId}",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const {data} = await axios.delete(
+        `/api/blog/comment/${commentId}`,
+        {headers: {Authorization: `Bearer ${token}`}}
       );
 
       toast.success(data.message);
@@ -130,19 +109,15 @@ const BlogPage = () => {
   };
 
   const deleteBlog = async () => {
-    if (!confirm("Delete this blog?")) return;
+    if(!confirm("Delete this blog?")) return;
 
     try {
       setLoading(true);
       const token = Cookies.get("token");
 
-      const { data } = await axios.delete(
+      const {data} = await axios.delete(
         `/api/blog/delete/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        {headers: {Authorization: `Bearer ${token}`}}
       );
 
       toast.success(data.message);
@@ -163,11 +138,7 @@ const BlogPage = () => {
       const { data } = await axios.post(
         `/api/blog/save/${id}`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        {headers: {Authorization: `Bearer ${token}`}}
       );
 
       toast.success(data.message);
@@ -180,8 +151,7 @@ const BlogPage = () => {
     }
   };
 
-  if (!blog) return <PageLoading />;
-
+  if(!blog) return <PageLoading />;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 space-y-16 text-zinc-900">
@@ -296,8 +266,7 @@ const BlogPage = () => {
           {comments.map((c) => (
             <div
               key={c.id}
-              className="flex gap-4 border-b pb-4 last:border-none"
-            >
+              className="flex gap-4 border-b pb-4 last:border-none">
               <User2 size={18} />
               <div className="flex-1">
                 <Link href={`/profile/${c.userid}`}>

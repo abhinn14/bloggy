@@ -19,16 +19,13 @@ const HomeContent = () => {
         {blogLoading ? (
           <PageLoading />
         ) : (
-          <div
-  className="
-    grid
-    grid-cols-1
-    sm:grid-cols-2
-    md:grid-cols-3
-    lg:grid-cols-4
-    gap-8
-  "
->
+          <div className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4
+            gap-8">
 
             {blogs?.length === 0 && <p>No Blogs Yet</p>}
             {blogs?.map((e, i) => (

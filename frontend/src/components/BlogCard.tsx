@@ -64,9 +64,7 @@ const BlogCard = ({ image, title, id, time }: BlogCardProps) => {
             leading-snug
             tracking-tight
             transition-colors
-            group-hover:text-orange-600
-          "
-        >
+            group-hover:text-orange-600">
           {title}
         </h2>
 
