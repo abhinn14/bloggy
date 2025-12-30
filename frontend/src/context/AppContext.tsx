@@ -15,7 +15,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export const blogCategories = [
   "Web Development",
-  "App Development",
+  "Mobile App Development",
   "DevOps",
   "Artificial Intelligence",
   "Cybersecurity",
